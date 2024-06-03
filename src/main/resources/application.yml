@@ -1,0 +1,90 @@
+server:
+  port: 9150
+spring:
+  application:
+    name: LedgerServiceV2
+  datasource:
+    url: jdbc:mariadb://192.168.100.12:3306/ledger_mce_108?useFractionalSeconds=true&serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true # stg1-maria-db.c5vumjc8772o.ap-southeast-1.rds.amazonaws.com
+    username: root # admin
+    password: EYcaDDDoLZ2waFCv # password
+    driver-class-name: org.mariadb.jdbc.Driver
+  redis:
+    database: 1
+    # Redis服务器地址
+    host: 192.168.100.12
+    # Redis服务器连接端口
+    port: 6379
+    # Redis服务器连接密码（默认为空）
+    password: 9Cpa7vy5nqup0A1s
+  cloud:
+    nacos:
+      discovery:
+        server-addr: http://127.0.0.1:8848
+        namespace: 47dea8bf-3dce-4c86-82bc-82f1497c57d2
+        enabled: true
+      config:
+        enabled: false
+        server-addr: 127.0.0.1:8848
+        import-check: false
+        namespace: 47dea8bf-3dce-4c86-82bc-82f1497c57d2
+
+  autoconfigure:
+    exclude: org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationAutoConfiguration,org.springframework.cloud.client.serviceregistry.ServiceRegistryAutoConfiguration
+
+  kafka:
+    bootstrap-servers: 192.168.100.12:9092
+    producer:
+      retries: 0
+      batch-size: 16384
+      buffer-memory: 33554432
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        linger.ms: 1
+    consumer:
+      enable-auto-commit: false
+      auto-commit-interval: 100ms
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      properties:
+        session.timeout.ms: 15000
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 60000
+        readTimeout: 60000
+        loggerLevel: basic
+
+#开放所有页面节点  默认只开启了health、info两个节点
+management:
+  endpoint:
+    health:
+      enabled: false
+      show-details: always
+    metrics:
+      enabled: true
+    loggers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+    enabled-by-default: false
+
+mybatis:
+  type-aliases-package: sg.ctx.legder.domain
+  mapper-locations:
+    - classpath*:sg/**/mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    # log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  level:
+    root: INFO
+    # sg.ctx.mpc.repository.**: debug
+  config: classpath:logging-config.xml
+
+

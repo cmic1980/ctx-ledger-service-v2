@@ -1,0 +1,72 @@
+buildscript {
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.7.9")
+
+    }
+}
+
+
+plugins {
+    id 'org.springframework.boot' version '2.7.9'
+    id 'java'
+
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+
+ext {
+    set('springBootAdminVersion', '2.7.9')
+    set('version', '1.0.0')
+    set('springCloudVersion', '2021.0.7')
+}
+
+
+group = 'sg.ctx'
+version = '1.0.0'
+sourceCompatibility = '11'
+
+
+repositories {
+    maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
+    maven{ url 'https://maven.aliyun.com/nexus/content/repositories/jcenter'}
+    maven { url 'https://maven.aliyun.com/repository/gradle-plugin'}
+    maven { url 'https://ams-nexus.mvgx.com/repository/maven-public/' }
+}
+
+dependencies {
+    implementation 'commons-io:commons-io:2.16.1'
+    implementation 'org.apache.commons:commons-lang3:3.8.1'
+    implementation 'io.netty:netty-all:4.1.89.Final'
+    implementation 'com.alibaba:fastjson:1.2.68'
+
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:2.6.2'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.0.1'
+
+    implementation 'sg.ctx.config:ctx-aws-ps-spring-boot-starter:1.0.8'
+
+    // nacos
+    implementation 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery:2021.0.5.0'
+
+    // Kafka
+    // implementation 'org.springframework.kafka:spring-kafka'
+
+    // state machine
+    // implementation 'com.alibaba.cola:cola-component-statemachine:4.3.1'
+}
+
+
+dependencyManagement {
+    imports {
+        mavenBom "de.codecentric:spring-boot-admin-dependencies:${springBootAdminVersion}"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}

@@ -1,0 +1,98 @@
+server:
+  port: 9150
+spring:
+  application:
+    name: LedgerServiceV2
+  datasource:
+    url: jdbc:mariadb://10.40.88.103:32122/cis?useFractionalSeconds=true&serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true # stg1-maria-db.c5vumjc8772o.ap-southeast-1.rds.amazonaws.com
+    username: admin # admin
+    password: onPKV4O1W2nJEC0a1QSB # password
+    driver-class-name: org.mariadb.jdbc.Driver
+  redis:
+    database: 3
+    # Redis服务器地址
+    host: 10.40.88.103
+    # Redis服务器连接端口
+    port: 30922
+    # Redis服务器连接密码（默认为空）
+    password: 123456
+  cloud:
+    nacos:
+      discovery:
+        server-addr: http://10.40.88.129:8848
+        namespace: 47dea8bf-3dce-4c86-82bc-82f1497c57d2
+        enabled: true
+      config:
+        enabled: false
+        server-addr: http://10.40.88.129:8848
+        import-check: false
+        namespace: 47dea8bf-3dce-4c86-82bc-82f1497c57d2
+
+  autoconfigure:
+    exclude: org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationAutoConfiguration,org.springframework.cloud.client.serviceregistry.ServiceRegistryAutoConfiguration
+
+
+#开放所有页面节点  默认只开启了health、info两个节点
+management:
+  endpoint:
+    health:
+      enabled: false
+      show-details: always
+    metrics:
+      enabled: true
+    loggers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+    enabled-by-default: false
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 60000
+        readTimeout: 60000
+        loggerLevel: basic
+  httpclient:
+    enabled: false
+    # feign最大连接数
+    max-connections: 300
+    # feign单个路径的最大连接数
+    max-connections-per-route: 100
+  okhttp:
+    enabled: true
+
+ribbon:
+  ReadTimeout: 60000
+  ConnectTimeout: 60000
+
+mybatis:
+  type-aliases-package: sg.ctx.ledger.domain
+  mapper-locations:
+    - classpath*:sg/**/mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+nasdaq:
+  taco:
+    server:
+      host: 10.40.88.122
+      port: 21201
+    authority:
+      username: TACO01
+      password: password
+  itch:
+    server:
+      host: 10.40.88.122
+      port: 21401 # tv: 21401 news: 21411
+    authority:
+      username: STV1 # tv: STV1 news: SNEWS1
+      password: password
+
+logging:
+  level:
+    root: INFO
+    # sg.ctx.mpc.repository.**: debug
+  config: classpath:logging-config-aws.xml

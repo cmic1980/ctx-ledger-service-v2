@@ -1,0 +1,78 @@
+server:
+  port: 9150
+spring:
+  application:
+    name: LedgerServiceV2
+  datasource:
+    url: ${aws.ps.datasource.url.cis.service}
+    username: ${aws.ps.datasource.username}
+    password: ${aws.ps.datasource.password}
+    driver: org.mariadb.jdbc.Driver
+  redis:
+    database: 1
+    # Redis服务器地址
+    host: ${aws.ps.redis.host}
+    # Redis服务器连接端口
+    port: ${aws.ps.int.redis.port}
+    # Redis服务器连接密码（默认为空）
+    password:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_ADDR}
+        namespace: ${NACOS_NAMESPACE_MCE}
+        enabled: true
+      config:
+        enabled: false
+        server-addr: ${NACOS_ADDR}
+        import-check: false
+        namespace: ${NACOS_NAMESPACE_MCE}
+  autoconfigure:
+    exclude: org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationAutoConfiguration,org.springframework.cloud.client.serviceregistry.ServiceRegistryAutoConfiguration
+
+
+feign:
+  client:
+    config:
+      default:
+      #这里时间一定要调长，否则feign客户端会报ReadTimeOut  服务端报Error parsing HTTP request header
+        connectTimeout: 30000
+        readTimeout: 30000
+        loggerLevel: basic
+
+#开放所有页面节点  默认只开启了health、info两个节点
+management:
+  endpoint:
+    health:
+      enabled: false
+      show-details: always
+    metrics:
+      enabled: true
+    loggers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+    enabled-by-default: false
+
+mybatis:
+  type-aliases-package: sg.ctx.ledger.domain
+  mapper-locations:
+    - classpath*:sg/**/mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    root: INFO
+  config: classpath:logging-config-aws.xml
+
+awsParameterStorePropertySource:
+  enabled: true
+
+awsParameterStoreSource:
+  ssmClient:
+    endpointConfiguration:
+      endpoint: https://ssm.ap-southeast-1.amazonaws.com
+      signingRegion: ap-southeast-1
